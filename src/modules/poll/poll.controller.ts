@@ -16,4 +16,10 @@ export class PollController {
     const data = await this.pollService.storeVote();
     return { data };
   }
+
+  @Get('/result')
+  async getResult(): Promise<any> {
+    const data = await this.pollService.getResult();
+    return { data };
+  }
 }
