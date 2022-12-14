@@ -8,6 +8,8 @@ RUN npm install
 FROM node:lts-buster AS build-project 
 WORKDIR /app 
 COPY . . 
+COPY --from=dependencies /app/node_modules node_modules
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 RUN npm run build 
 
 FROM node:lts-buster-slim 
