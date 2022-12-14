@@ -7,7 +7,7 @@ class FirehoseService {
   constructor() {
     this.firehose = new AWS.Firehose({
       apiVersion: '2015-08-04',
-      region: 'ap-south-1',
+      region: process.env.AWS_REGION,
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     });
@@ -15,10 +15,15 @@ class FirehoseService {
 
   public async putRecord(data: any): Promise<any> {
     try {
-      return await this.firehose.putRecord(data, function (err, data) {
-        console.log('error', err);
-        console.log('data', data);
-      });
+      let resData: any = {};
+      Promise.all([
+        await this.firehose.putRecord(data, function (err, res) {
+          console.log('error', err);
+          console.log('data', res);
+          resData = res;
+        }),
+      ]);
+      return resData;
     } catch (e) {
       throw new InternalServerErrorException(e);
     }

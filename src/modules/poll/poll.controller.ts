@@ -1,7 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { VoteRequestDto } from './dto';
 import { PollService } from './poll.service';
 
-@Controller('poll')
+@Controller('api/v1/poll')
 export class PollController {
   constructor(private readonly pollService: PollService) {}
 
@@ -11,9 +12,9 @@ export class PollController {
     return { data };
   }
 
-  @Get('/vote')
-  async storeVote() {
-    const data = await this.pollService.storeVote();
+  @Post('/vote')
+  async storeVote(@Body() body: VoteRequestDto) {
+    const data = await this.pollService.storeVote(body);
     return { data };
   }
 

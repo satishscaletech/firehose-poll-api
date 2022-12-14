@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POLL</title>
+  </head>
+  <style>
+    .checkbox-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .submit-btn {
+      border: 1px solid black;
+      border-radius: 20px;
+    }
+
+    .pointer {
+      cursor: pointer;
+    }
+  </style>
+  <body>
+    <div>
+      <h3 id="title"></h3>
+      <div class="checkbox-wrapper" id="options"></div>
+      <div>
+        <input type="submit" class="submit-btn" onclick="getSelectedValue()" />
+      </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      let url = 'http://poll-app-demo-lb-1941796823.ca-central-1.elb.amazonaws.com/api/v1';
+      window.onload = getQuestions();
+
+      async function getQuestions() {
+        return await axios
+          .get(`${url}/poll/questions`)
+          .then((response) => {
+            const data = response.data.data;
+            // console.log(`data`, data);
+            appendData(data);
+          })
+          .catch((error) => console.error(error));
+      }
+
+      function getPollResult() {
+        axios
+          .get(`${url}/poll/result`)
+          .then((response) => {
+            const data = response.data.data;
+            console.log(`poll result`, data);
+          })
+          .catch((error) => console.error(error));
+      }
+
+      function appendData(data) {
+        var tilte = document.getElementById("title");
+        tilte.innerHTML = data[0].title;
+        let options = "";
+        data[0].options.map((value) => {
+          options += `<label for='${value.id}' class="pointer">
+      <input type="radio" id=${value.id} name="color" value='${value.title}' />
+      ${value.title}
+    </label>`;
+        });
+        document.getElementById("options").innerHTML = options;
+      }
+
+      function getSelectedValue() {
+        let ele = document.getElementsByName("color");
+        let op = "";
+        for (i = 0; i < ele.length; i++) {
+          if (ele[i].checked) {
+            op = ele[i].value;
+          }
+        }
+        console.log(op);
+      }
+    </script>
+  </body>
+</html>

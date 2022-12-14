@@ -10,7 +10,7 @@ WORKDIR /app
 COPY . . 
 RUN npm run build 
 
-FROM node:list-buster-slim 
+FROM node:lts-buster-slim 
 WORKDIR /app 
 COPY --from=build-project /app/node_modules node_modules
 COPY --from=build-project /app/dist .

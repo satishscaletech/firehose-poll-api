@@ -6,6 +6,7 @@ import {
 import { Sequelize } from 'sequelize-typescript';
 import Firehose from 'src/lib/aws/firehose';
 import { Option, Question, Vote } from 'src/models';
+import { VoteRequestDto } from './dto';
 
 @Injectable()
 export class PollService {
@@ -34,11 +35,16 @@ export class PollService {
     }
   }
 
-  public async storeVote() {
+  public async storeVote(dto: VoteRequestDto) {
+    console.log('store vote dto', dto);
+
     try {
       const recordParams = {
         Record: {
-          Data: JSON.stringify({ questionId: 1, optionId: 2 }),
+          Data: JSON.stringify({
+            questionId: dto.questionId,
+            optionId: dto.optionId,
+          }),
         },
         DeliveryStreamName: process.env.AWS_FIREHOSE_STREAM,
       };
