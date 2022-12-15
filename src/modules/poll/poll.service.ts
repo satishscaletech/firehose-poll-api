@@ -59,6 +59,17 @@ export class PollService {
 
   public async getResult() {
     try {
+      const options = await this.optionRepo.findAll();
+      const resultSchema = options.map((option) => {
+        return {
+          id: option.id,
+          title: option.title,
+          voteCount: 0,
+          percentage: 0,
+        };
+      });
+
+      const totalVote = await this.voteRepo.count();
       const voteData = await this.voteRepo.findAll({
         attributes: [
           'optionId',
@@ -72,13 +83,25 @@ export class PollService {
 
       return Promise.all(
         voteData.map(async (item: any) => {
-          console.log('item VoteCount', item);
+          const index = resultSchema.findIndex(
+            (option) => option.id === item.optionId,
+          );
 
-          const option = await this.optionRepo.findByPk(item.optionId);
-          item.title = option?.title;
-          return item;
+          if (index >= 0) {
+            resultSchema[index].voteCount = item.voteCount;
+            console.log(
+              'resultSchema[index].voteCount',
+              resultSchema[index].voteCount,
+            );
+
+            const per =
+              (Number(resultSchema[index].voteCount) / Number(totalVote)) * 100;
+            resultSchema[index].percentage = Number(per.toFixed(2));
+          }
         }),
-      );
+      ).then(() => {
+        return resultSchema;
+      });
     } catch (e) {
       throw new InternalServerErrorException(e);
     }
