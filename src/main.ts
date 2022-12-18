@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.useWebSocketAdapter(new WsAdapter(app));
   app.use(express.static('public'));
-
+  //Changes
   await app.listen(process.env.SERVER_PORT);
   console.log('Server running on:', process.env.SERVER_PORT);
 }
